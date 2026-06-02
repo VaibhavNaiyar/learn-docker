@@ -6,7 +6,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const app = express();
 
 // 1. Setup the database connection pool (using your local Docker credentials)
-const connectionString = process.env.DATABASE_URL || "postgres://postgres:mysecretPAssword@localhost:5432/postgres?sslmode=disable";
+const connectionString = process.env.DATABASE_URL || "postgres://postgres:mysecretpassword@postgres:5432/postgres?sslmode=disable";
 const pool = new Pool({ connectionString });
 
 // 2. Create the Prisma adapter

@@ -5,26 +5,27 @@ WORKDIR /app
 # 1. Install OpenSSL (Required by Prisma on Alpine Linux)
 RUN apk add --update --no-cache openssl
 
+# 2. Copy dependency files early for caching
 COPY ./package.json ./package.json
 COPY ./tsconfig.json ./tsconfig.json
 COPY ./package-lock.json ./package-lock.json
 COPY ./prisma ./prisma
 
-# 2. Install dependencies
-
+# 3. Install dependencies
 RUN npm install
-RUN apk add --update --no-cache openssl 
-#we do this because prisma needs openssl to generate the client and run the migrations, and it is not included in the base image
+
+# 4. Copy the rest of your application code
 COPY . .
 
-ENV = DATABASE_URL="postgres://postgres:mysecretPAssword@localhost:5432/postgres?sslmode=disable"
-
-# 3. Generate the Prisma Client 
-RUN npx prisma migrate dev
+# 5. Generate the Prisma Client (No database connection needed for this)
 RUN npx prisma generate
 
-# 4. Build the TypeScript project
+# 6. Build the TypeScript project
 RUN npm run build
 
-# 5. Start the application
-CMD ["npm", "start"]
+ENV DATABASE_URL=postgres://postgres:mysecretpassword@postgres:5432/postgres
+
+EXPOSE 3000
+
+# 7. Run migrations then start the application
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
