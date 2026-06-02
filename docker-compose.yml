@@ -1,0 +1,31 @@
+services:
+
+  #  Service 1: PostgreSQL Database
+  postgres:
+    image: postgres:16     # pinned to v16 — avoids breaking changes from auto-upgrading to v17/v18
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"        # exposes postgres to your local machine so you can use TablePlus etc.
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # persists data so it survives container restarts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]   # checks if postgres is actually ready
+      interval: 5s
+      retries: 5
+
+  #  Service 2: Your Node/Express App
+  app:
+    build: .               # builds using the Dockerfile in this folder
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:mysecretpassword@postgres:5432/postgres
+    depends_on:
+      postgres:
+        condition: service_healthy   # waits until postgres passes the healthcheck above
+
+# Named volume — Docker manages this folder on your machine
+volumes:
+  pgdata:

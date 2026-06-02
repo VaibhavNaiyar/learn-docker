@@ -20,11 +20,11 @@
 - Start postgres:
     - `docker run --network user_project --name postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres`
 
-### --- MAC / LINUX BUILD INSTRUCTIONS ---
+###  MAC / LINUX BUILD INSTRUCTIONS 
 # On Mac, Docker connects directly to the host Wi-Fi, so this flag works perfectly.
 - Build image: `docker build --network=host -t user-project .`
 
-### --- WINDOWS BUILD INSTRUCTIONS ---
+###  WINDOWS BUILD INSTRUCTIONS 
 # On Windows, Docker lives in a Virtual Machine. 
 # Do NOT use --network=host, or the build will fail to download packages.
 - Build image: `docker build -t user-project .`
